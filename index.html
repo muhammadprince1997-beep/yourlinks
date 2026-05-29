@@ -292,7 +292,7 @@
             <!-- RIGHT SIDE: Live Mockup Simulator -->
             <div id="preview-panel" class="hidden lg:block col-span-12 lg:col-span-5 flex flex-col items-center justify-center lg:sticky lg:top-24">
                 
-                <span class="text-xs text-slate-400 mb-2 flex items-center gap-1.5"><i class="fa-solid fa-eye text-violet-500"></i> @معاينة مباشرة تفاعلية</span>
+                <span class="text-xs text-slate-400 mb-2 flex items-center gap-1.5"><i class="fa-solid fa-eye text-violet-500"></i> معاينة مباشرة تفاعلية</span>
                 
                 <!-- Mobile Simulator Phone -->
                 <div class="relative w-[340px] h-[640px] bg-slate-950 rounded-[40px] border-[10px] border-slate-800 shadow-2xl overflow-hidden flex flex-col ring-8 ring-slate-950/20">
@@ -307,7 +307,7 @@
                             <div id="phone-avatar" class="w-20 h-20 rounded-full flex items-center justify-center text-4xl shadow-md border-2 border-white/20 mb-3 bg-white/10 backdrop-blur-md overflow-hidden">🚀</div>
                             
                             <!-- Name & Biography -->
-                            <h3 id="phone-name" class="text-lg font-bold tracking-wide">أحمد الفاضل</h3>
+                            <h3 id="phone-name" class="text-lg font-bold tracking-wide">الاسم الكامل</h3>
                             <p id="phone-bio" class="text-xs text-white/70 max-w-[240px] mt-1 line-clamp-2">الوصف الخاص ببطاقتك</p>
                             
                             <!-- Quick Social Icons -->
@@ -387,7 +387,7 @@
         <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
             <h3 class="text-lg font-bold text-white mb-2" id="modal-title">تنبيه</h3>
             <p class="text-slate-300 text-sm leading-relaxed mb-6" id="modal-desc">رسالة للتوضيح</p>
-            <div class="flex justify-end gap-3">
+            <div class="flex justify-end gap-3" id="modal-actions-container">
                 <button onclick="window.closeModal()" class="bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all">
                     حسنًا
                 </button>
@@ -548,9 +548,58 @@
                 showModal("مرحباً بك! 🎉", `تم تسجيل الدخول بنجاح باسم: ${currentUser.displayName}`);
                 loadOrInitializeUserData(currentUser.uid);
             } catch (error) {
-                console.error("Auth Error", error);
-                showModal("حدث خطأ في التسجيل", "فشل تسجيل الدخول بحساب Google. الرجاء المحاولة ثانية وتأكد من تفعيل Google Provider في Firebase.");
+                console.error("Auth Error details:", error);
+                
+                // معالجة خطأ النطاق غير المصرح به بالتفصيل (auth/unauthorized-domain)
+                if (error.code === 'auth/unauthorized-domain' || error.message.includes('unauthorized-domain')) {
+                    const currentDomain = window.location.hostname;
+                    showDetailedDomainModal(currentDomain);
+                } else {
+                    showModal("حدث خطأ في التسجيل", "فشل تسجيل الدخول بحساب Google. الرجاء المحاولة ثانية وتأكد من تفعيل Google Provider في Firebase.");
+                }
             }
+        };
+
+        // عرض نافذة إرشادية مخصصة ومفصلة لشرح تفعيل النطاق
+        function showDetailedDomainModal(domain) {
+            const title = "⚠️ تفعيل النطاق مطلوب في Firebase";
+            const desc = `أنت تقوم بتشغيل التطبيق حالياً على نطاق غير مصرح به في إعدادات الأمان الخاصة بك:\n\n👉 النطاق المطلوب تصريحه: [ ${domain} ]\n\nلحل هذا الخطأ والسماح بتسجيل الدخول الفوري بـ Google، يرجى القيام بالخطوات البسيطة التالية:\n\n1. اذهب إلى Firebase Console لمشروعك (yourlinks-98f7a).\n2. ادخل إلى قائمة Authentication ثم اضغط على تبويب Settings في الأعلى.\n3. اختر Authorized Domains من القائمة الجانبية.\n4. اضغط على زر "Add Domain" وأضف النطاق التالي بدقة: ${domain}\n\nبعد إضافته، ستتمكن أنت وأي مستخدم من تسجيل الدخول بلمحة بصر!`;
+            
+            const modalTitle = document.getElementById('modal-title');
+            const modalDesc = document.getElementById('modal-desc');
+            const modalActions = document.getElementById('modal-actions-container');
+            
+            modalTitle.innerText = title;
+            modalDesc.innerHTML = desc.replace(/\n/g, '<br>');
+            
+            // إضافة زر تجريبي لتمكين المستخدم من تصفح لوحة التحكم حتى بدون تفعيل النطاق فوراً
+            modalActions.innerHTML = `
+                <button onclick="window.bypassAuthForTesting()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl transition-all ml-2">
+                    تجاوز للتجربة محلياً 🛠️
+                </button>
+                <button onclick="window.closeModal()" class="bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold px-5 py-2 rounded-xl transition-all">
+                    حسنًا، فهمت
+                </button>
+            `;
+            
+            document.getElementById('custom-modal').classList.remove('hidden');
+        }
+
+        // تمكين المستخدم من استعراض لوحة التحكم محلياً للتجريب والتعديل
+        window.bypassAuthForTesting = () => {
+            window.closeModal();
+            currentUser = {
+                uid: "test-user-admin",
+                displayName: "الاستاذ محمد عبدالرحمن (تجريبي)",
+                photoURL: "https://api.dicebear.com/7.x/bottts/svg"
+            };
+            
+            document.getElementById('user-profile-widget').classList.remove('hidden');
+            document.getElementById('user-profile-img').src = currentUser.photoURL;
+            document.getElementById('user-profile-name').innerText = currentUser.displayName;
+            document.getElementById('btn-login').classList.add('hidden');
+            
+            loadOrInitializeUserData(currentUser.uid);
         };
 
         window.logoutFirebase = async () => {
@@ -574,11 +623,11 @@
                     appState = docSnap.data();
                 } else {
                     // Setup default mock values on registration
-                    appState.profile.name = currentUser.displayName || 'الاسم الكامل';
+                    appState.profile.name = currentUser ? currentUser.displayName : 'الاستاذ محمد عبدالرحمن';
                     appState.profile.bio = 'مرحبًا بك في صفحتي الشخصية السحابية!';
                     appState.profile.avatarType = 'image';
                     appState.profile.avatarEmoji = '🚀';
-                    appState.profile.avatarImage = currentUser.photoURL || 'https://api.dicebear.com/7.x/bottts/svg';
+                    appState.profile.avatarImage = currentUser ? currentUser.photoURL : 'https://api.dicebear.com/7.x/bottts/svg';
                 }
                 
                 updateViewsByAuthStatus();
@@ -594,7 +643,7 @@
 
         // Save All elements in state to Firestore database (Strict Path - RULE 1 & 3)
         window.saveAllToFirebaseCloud = async () => {
-            const user = auth.currentUser;
+            const user = currentUser || auth.currentUser;
             if (!user) {
                 showModal("مطلوب تسجيل الدخول", "يرجى تسجيل الدخول أولاً بحساب Google لحفظ وتخزين بطاقتك الشخصية في السحاب.");
                 return;
@@ -762,7 +811,9 @@
             const welcome = document.getElementById('welcome-view');
             const dashboard = document.getElementById('dashboard-view');
             
-            if (currentUser && !currentUser.isAnonymous) {
+            const userActive = currentUser || (auth.currentUser && !auth.currentUser.isAnonymous);
+            
+            if (userActive) {
                 welcome.classList.add('hidden');
                 dashboard.classList.remove('hidden');
             } else {
@@ -1236,6 +1287,14 @@
             document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-desc').innerText = desc;
             document.getElementById('custom-modal').classList.remove('hidden');
+            
+            // إعادة تعيين الأزرار الافتراضية
+            const modalActions = document.getElementById('modal-actions-container');
+            modalActions.innerHTML = `
+                <button onclick="window.closeModal()" class="bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all">
+                    حسنًا
+                </button>
+            `;
         };
 
         window.closeModal = () => {
