@@ -124,8 +124,8 @@
                 <span class="text-xs text-slate-500">إعداد وتطوير المنصة</span>
                 <div class="flex items-center gap-2 text-sm font-bold text-slate-300">
                     <span>الأستاذ محمد عبدالرحمن</span>
-                    <a href="https://instagram.com" target="_blank" class="text-pink-500 hover:text-pink-400"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="https://wa.me/96477000000" target="_blank" class="text-emerald-500 hover:text-emerald-400"><i class="fa-brands fa-whatsapp"></i></a>
+                    <a href="https://instagram.com/m9h.7d" target="_blank" class="text-pink-500 hover:text-pink-400"><i class="fa-brands fa-instagram text-base"></i></a>
+                    <a href="https://wa.me/9647709873200" target="_blank" class="text-emerald-500 hover:text-emerald-400"><i class="fa-brands fa-whatsapp text-base"></i></a>
                 </div>
             </div>
         </section>
@@ -259,7 +259,7 @@
                         </div>
                         <div>
                             <span class="block text-xs text-slate-400 mb-1"><i class="fa-brands fa-whatsapp text-emerald-500 ml-1"></i> واتساب</span>
-                            <input type="text" id="social-whatsapp" oninput="window.updateSocialsLocally()" placeholder="رقم الهاتف (مثال: 96477000000)" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-violet-500">
+                            <input type="text" id="social-whatsapp" oninput="window.updateSocialsLocally()" placeholder="رقم الهاتف (مثال: 9647709873200)" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-violet-500">
                         </div>
                     </div>
                 </div>
@@ -292,7 +292,7 @@
             <!-- RIGHT SIDE: Live Mockup Simulator -->
             <div id="preview-panel" class="hidden lg:block col-span-12 lg:col-span-5 flex flex-col items-center justify-center lg:sticky lg:top-24">
                 
-                <span class="text-xs text-slate-400 mb-2 flex items-center gap-1.5"><i class="fa-solid fa-eye text-violet-500"></i> معاينة مباشرة تفاعلية</span>
+                <span class="text-xs text-slate-400 mb-2 flex items-center gap-1.5"><i class="fa-solid fa-eye text-violet-500"></i> @معاينة مباشرة تفاعلية</span>
                 
                 <!-- Mobile Simulator Phone -->
                 <div class="relative w-[340px] h-[640px] bg-slate-950 rounded-[40px] border-[10px] border-slate-800 shadow-2xl overflow-hidden flex flex-col ring-8 ring-slate-950/20">
@@ -325,8 +325,8 @@
                                 <span class="block text-[9px] opacity-40 mb-1">صنع وتصميم باستخدام رابطي</span>
                                 <div class="inline-flex items-center justify-center gap-1 text-[10px] font-bold opacity-60 bg-white/5 py-1 px-2.5 rounded-full">
                                     <span>إعداد: أ. محمد عبدالرحمن</span>
-                                    <a href="https://instagram.com" class="text-pink-400"><i class="fa-brands fa-instagram"></i></a>
-                                    <a href="https://wa.me/96477000000" class="text-emerald-400"><i class="fa-brands fa-whatsapp"></i></a>
+                                    <a href="https://instagram.com/m9h.7d" target="_blank" class="text-pink-400"><i class="fa-brands fa-instagram"></i></a>
+                                    <a href="https://wa.me/9647709873200" target="_blank" class="text-emerald-400"><i class="fa-brands fa-whatsapp"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -369,8 +369,8 @@
                     <span class="block text-xs opacity-50">تم إنشاء الصفحة بواسطة تطبيق <a href="#" onclick="window.location.hash=''; window.location.reload();" class="underline font-bold text-violet-400">رابطي</a></span>
                     <div class="inline-flex items-center gap-2 bg-white/5 backdrop-blur-md py-1.5 px-3 rounded-full text-xs font-bold border border-white/10">
                         <span class="opacity-70">إعداد: الأستاذ محمد عبدالرحمن</span>
-                        <a href="https://instagram.com" target="_blank" class="text-pink-400 hover:text-pink-300"><i class="fa-brands fa-instagram"></i></a>
-                        <a href="https://wa.me/96477000000" target="_blank" class="text-emerald-400 hover:text-emerald-300"><i class="fa-brands fa-whatsapp"></i></a>
+                        <a href="https://instagram.com/m9h.7d" target="_blank" class="text-pink-400 hover:text-pink-300"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="https://wa.me/9647709873200" target="_blank" class="text-emerald-400 hover:text-emerald-300"><i class="fa-brands fa-whatsapp"></i></a>
                     </div>
                 </div>
             </div>
@@ -484,10 +484,16 @@
         // --- Firebase Auth Initialization Sequence (RULE 3) ---
         const initAuthAndListen = async () => {
             try {
+                // فحص ما إذا كان هناك توكن افتراضي للمنصة ومحاولة استخدامه بأمان
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
+                    try {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } catch (customTokenErr) {
+                        // تراجع ذكي: في حال وجود تعارض بالتوكن المخصص مع الإعدادات الخاصة بك، يتم تفعيله مجهولاً فوراً
+                        console.log("Custom token rejected by custom project. Falling back to anonymous auth.", customTokenErr);
+                        await signInAnonymously(auth);
+                    }
                 } else {
-                    // Start anonymously if not signed in to adhere to query guards before sign in
                     await signInAnonymously(auth);
                 }
             } catch (err) {
@@ -703,12 +709,14 @@
                             card.innerHTML = `
                                 <div class="text-3xl mt-1 select-none">🔗</div>
                                 <span class="text-xs font-extrabold leading-normal line-clamp-2 w-full mt-1">${link.title}</span>
+                            </a>
                             `;
                         } else if (data.layout === 'grid') {
                             card.className = `w-full h-[110px] p-4 rounded-xl flex flex-col justify-between items-start text-right shadow-md transition-all ${cardClass}`;
                             card.innerHTML = `
                                 <i class="fa-solid fa-arrow-up-right-from-square text-xs self-end opacity-55"></i>
                                 <span class="text-xs font-extrabold leading-normal line-clamp-2 mt-auto w-full">${link.title}</span>
+                            </a>
                             `;
                         }
 
@@ -1040,12 +1048,14 @@
                     card.innerHTML = `
                         <div class="text-2xl mt-1 select-none">🔗</div>
                         <span class="text-xs font-bold leading-snug line-clamp-2 w-full mt-1">${link.title}</span>
+                    </a>
                     `;
                 } else if (appState.layout === 'grid') {
                     card.className = `w-full h-[95px] p-3 rounded-xl flex flex-col justify-between items-start text-right shadow-md transition-all ${cardClass}`;
                     card.innerHTML = `
                         <i class="fa-solid fa-arrow-up-right-from-square text-[10px] self-end opacity-55"></i>
                         <span class="text-xs font-bold leading-normal line-clamp-2 mt-auto w-full">${link.title}</span>
+                    </a>
                     `;
                 }
 
@@ -1175,8 +1185,8 @@
             <span class="block text-[11px] opacity-40">تم إنشاء الصفحة بواسطة تطبيق <a href="#" class="underline font-bold">رابطي</a></span>
             <div class="inline-flex items-center gap-2 bg-white/5 backdrop-blur-md py-1.5 px-3 rounded-full text-[11px] font-bold border border-white/10">
                 <span class="opacity-70">إعداد: الأستاذ محمد عبدالرحمن</span>
-                <a href="https://instagram.com" target="_blank" class="text-pink-400"><i class="fa-brands fa-instagram"></i></a>
-                <a href="https://wa.me/96477000000" target="_blank" class="text-emerald-400"><i class="fa-brands fa-whatsapp"></i></a>
+                <a href="https://instagram.com/m9h.7d" target="_blank" class="text-pink-400"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://wa.me/9647709873200" target="_blank" class="text-emerald-400"><i class="fa-brands fa-whatsapp"></i></a>
             </div>
         </div>
     </div>
