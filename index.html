@@ -529,6 +529,9 @@
                     document.getElementById('user-profile-name').innerText = user.displayName || 'مستخدم سحابي';
                     document.getElementById('btn-login').classList.add('hidden');
                     
+                    // إظهار لوحة التحكم فوراً لكي لا يبقى في شاشة الترحيب
+                    updateViewsByAuthStatus();
+                    
                     // تحميل بيانات المستخدم من فايربيس فورا والتبديل المباشر
                     loadOrInitializeUserData(user.uid);
                 } else {
@@ -634,8 +637,7 @@
                     appState.profile.avatarImage = currentUser ? currentUser.photoURL : 'https://api.dicebear.com/7.x/bottts/svg';
                 }
                 
-                // تحديث واجهات العرض فور جلب البيانات من السحاب
-                updateViewsByAuthStatus();
+                // تحديث واجهات العرض
                 loadFormDataFromState();
                 renderLinksList();
                 renderPreviewScreen();
@@ -643,6 +645,13 @@
                 updateShareLinkUI(userId);
             } catch (error) {
                 console.error("Firestore loading error:", error);
+                // Even if Firestore fails, initialize the UI so it doesn't break
+                loadFormDataFromState();
+                renderLinksList();
+                renderPreviewScreen();
+                updateLayoutButtons();
+                updateShareLinkUI(userId);
+                showModal("تنبيه قاعدة البيانات", "تم تسجيل الدخول بنجاح! لكن حدث خطأ في الاتصال بقاعدة البيانات. يرجى التأكد من تفعيل Firestore Database وضبط القواعد (Rules) للسماح بالقراءة والكتابة لتتمكن من الحفظ.");
             }
         }
 
