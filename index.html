@@ -32,6 +32,10 @@
         }
         html.public-mode #public-live-view {
             display: flex !important;
+            min-height: 100dvh !important;
+        }
+        html.public-mode body {
+            overflow-x: hidden;
         }
 
         /* Custom scrollbar */
@@ -364,18 +368,12 @@
     </section>
 
     <!-- Dynamic Public View Mode (Shown when viewing via custom user URL hash) -->
-    <section id="public-live-view" class="hidden flex-grow flex items-start justify-center p-4 relative min-h-screen w-full">
+    <section id="public-live-view" class="hidden w-full relative min-h-[100dvh] flex items-start justify-center overflow-x-hidden">
         
-        <!-- مؤشر التحميل السريع (يظهر فور فتح الرابط قبل جلب البيانات) -->
-        <div id="public-loader" class="flex flex-col items-center justify-center mt-32 z-20">
-            <i class="fa-solid fa-spinner fa-spin text-4xl text-violet-500 mb-4"></i>
-            <span class="text-sm font-bold text-slate-400 animate-pulse">جاري إحضار الروابط...</span>
-        </div>
-
         <!-- Dynamic styling will render completely here -->
-        <div id="public-inner-wrapper" class="hidden w-full max-w-md bg-transparent flex-col items-center justify-start text-center py-12 px-2 text-white z-10">
+        <div id="public-inner-wrapper" class="hidden w-full max-w-[380px] mx-auto bg-transparent flex-col items-center justify-start text-center py-10 px-4 text-white z-10 min-h-[100dvh]">
             <!-- Main user identity -->
-            <div id="public-avatar" class="w-24 h-24 rounded-full flex items-center justify-center text-5xl shadow-lg border-2 border-white/20 mb-4 bg-white/10 backdrop-blur-md overflow-hidden"></div>
+            <div id="public-avatar" class="w-24 h-24 rounded-full flex shrink-0 items-center justify-center text-5xl shadow-lg border-2 border-white/20 mb-4 bg-white/10 backdrop-blur-md overflow-hidden"></div>
             
             <h1 id="public-name" class="text-2xl font-extrabold tracking-wide mb-2">الاسم</h1>
                 <p id="public-bio" class="text-sm max-w-sm leading-relaxed mb-6 opacity-80">الوصف</p>
@@ -389,19 +387,19 @@
                 <div id="public-links-container" class="w-full"></div>
 
                 <!-- Platform Unified Credit (User Requested) -->
-                <div class="mt-16 pt-6 border-t border-white/10 w-full text-center space-y-2">
-                    <span class="block text-xs opacity-50">تم إنشاء الصفحة بواسطة تطبيق <a href="#" onclick="window.location.hash=''; window.location.reload();" class="underline font-bold text-violet-400">رابطي</a></span>
-                    <div class="inline-flex items-center gap-2 bg-white/5 backdrop-blur-md py-1.5 px-3 rounded-full text-xs font-bold border border-white/10">
+                <div class="mt-auto pt-10 pb-4 w-full text-center space-y-2">
+                    <span class="block text-[10px] opacity-40">تم إنشاء الصفحة بواسطة تطبيق <a href="#" onclick="window.location.hash=''; window.location.reload();" class="underline font-bold text-violet-400">رابطي</a></span>
+                    <div class="inline-flex items-center gap-2 bg-white/5 backdrop-blur-md py-1.5 px-3 rounded-full text-[11px] font-bold border border-white/10">
                         <span class="opacity-70">إعداد: الأستاذ محمد عبدالرحمن</span>
-                        <a href="https://instagram.com/m9h.7d" target="_blank" class="text-pink-400 hover:text-pink-300"><i class="fa-brands fa-instagram"></i></a>
-                        <a href="https://wa.me/9647709873200" target="_blank" class="text-emerald-400 hover:text-emerald-300"><i class="fa-brands fa-whatsapp"></i></a>
+                        <a href="https://instagram.com/m9h.7d" target="_blank" class="text-pink-400 hover:text-pink-300"><i class="fa-brands fa-instagram text-sm"></i></a>
+                        <a href="https://wa.me/9647709873200" target="_blank" class="text-emerald-400 hover:text-emerald-300"><i class="fa-brands fa-whatsapp text-sm"></i></a>
                     </div>
                 </div>
             </div>
 
-            <!-- Background Decor -->
-            <div class="absolute -top-24 -right-24 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <!-- Background Decor (Restrained for mobile) -->
+            <div class="absolute -top-10 -right-10 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-10 -left-10 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
         </section>
 
     </div>
@@ -724,7 +722,9 @@
             document.querySelector('header').classList.add('hidden');
             document.getElementById('welcome-view').classList.add('hidden');
             document.getElementById('dashboard-view').classList.add('hidden');
-            document.getElementById('public-live-view').classList.remove('hidden');
+            
+            const pubView = document.getElementById('public-live-view');
+            pubView.classList.remove('hidden');
 
             try {
                 // Fetch public user record securely
@@ -738,13 +738,10 @@
 
                     // Styled page container
                     document.body.setAttribute('style', activeTheme.previewBg);
-                    const pubView = document.getElementById('public-live-view');
                     pubView.setAttribute('style', activeTheme.previewBg);
                     
-                    // إخفاء مؤشر التحميل وإظهار محتوى الروابط
-                    document.getElementById('public-loader').classList.add('hidden');
                     const wrapper = document.getElementById('public-inner-wrapper');
-                    wrapper.className = `w-full max-w-md bg-transparent flex flex-col items-center justify-start text-center py-12 px-2 z-10 ${isLight ? 'text-slate-800' : 'text-white'}`;
+                    wrapper.className = `w-full max-w-[380px] mx-auto bg-transparent flex flex-col items-center justify-start text-center py-10 px-4 z-10 min-h-[100dvh] ${isLight ? 'text-slate-800' : 'text-white'}`;
 
                     // Set Avatar
                     const avatarDiv = document.getElementById('public-avatar');
@@ -822,9 +819,10 @@
                     });
 
                 } else {
-                    document.getElementById('public-loader').classList.add('hidden');
-                    document.getElementById('public-live-view').innerHTML = `
-                        <div class="text-center p-8 text-white mt-32">
+                    const wrapper = document.getElementById('public-inner-wrapper');
+                    wrapper.className = "w-full max-w-md mx-auto flex flex-col items-center justify-center text-center py-12 px-4 text-white z-10 min-h-[100dvh]";
+                    wrapper.innerHTML = `
+                        <div class="text-center p-8 text-white mt-10">
                             <i class="fa-solid fa-face-frown text-5xl mb-4 text-violet-400"></i>
                             <h2 class="text-2xl font-bold mb-2">الصفحة المطلوبة غير موجودة!</h2>
                             <p class="text-xs text-slate-400 mb-6">تأكد من كتابة الرابط بشكل صحيح.</p>
