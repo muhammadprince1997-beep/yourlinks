@@ -292,7 +292,7 @@
             <!-- RIGHT SIDE: Live Mockup Simulator -->
             <div id="preview-panel" class="hidden lg:block col-span-12 lg:col-span-5 flex flex-col items-center justify-center lg:sticky lg:top-24">
                 
-                <span class="text-xs text-slate-400 mb-2 flex items-center gap-1.5"><i class="fa-solid fa-eye text-violet-500"></i> معاينة مباشرة تفاعلية</span>
+                <span class="text-xs text-slate-400 mb-2 flex items-center gap-1.5"><i class="fa-solid fa-eye text-violet-500"></i> @معاينة مباشرة تفاعلية</span>
                 
                 <!-- Mobile Simulator Phone -->
                 <div class="relative w-[340px] h-[640px] bg-slate-950 rounded-[40px] border-[10px] border-slate-800 shadow-2xl overflow-hidden flex flex-col ring-8 ring-slate-950/20">
@@ -519,13 +519,17 @@
                     return;
                 }
 
-                if (user && !user.isAnonymous) {
+                if (user) {
+                    // إذا كان هناك مستخدم مسجل دخول حقيقي (ليس مجهولاً أو إذا كانت منصتك تعتمد على التوثيق الفردي)
                     currentUser = user;
+                    
+                    // تحديث واجهة المستخدم في الأعلى فوراً وبلا شروط إضافية معقدة
                     document.getElementById('user-profile-widget').classList.remove('hidden');
                     document.getElementById('user-profile-img').src = user.photoURL || 'https://api.dicebear.com/7.x/bottts/svg';
-                    document.getElementById('user-profile-name').innerText = user.displayName || 'مستخدم';
+                    document.getElementById('user-profile-name').innerText = user.displayName || 'مستخدم سحابي';
                     document.getElementById('btn-login').classList.add('hidden');
                     
+                    // تحميل بيانات المستخدم من فايربيس فورا والتبديل المباشر
                     loadOrInitializeUserData(user.uid);
                 } else {
                     currentUser = null;
@@ -630,6 +634,7 @@
                     appState.profile.avatarImage = currentUser ? currentUser.photoURL : 'https://api.dicebear.com/7.x/bottts/svg';
                 }
                 
+                // تحديث واجهات العرض فور جلب البيانات من السحاب
                 updateViewsByAuthStatus();
                 loadFormDataFromState();
                 renderLinksList();
@@ -662,8 +667,10 @@
             const domain = window.location.origin + window.location.pathname;
             const fullLink = `${domain}#${userId}`;
             const linkText = document.getElementById('live-share-link');
-            linkText.innerText = fullLink;
-            linkText.setAttribute('data-link', fullLink);
+            if (linkText) {
+                linkText.innerText = fullLink;
+                linkText.setAttribute('data-link', fullLink);
+            }
         }
 
         window.copyShareLink = () => {
@@ -811,9 +818,10 @@
             const welcome = document.getElementById('welcome-view');
             const dashboard = document.getElementById('dashboard-view');
             
-            const userActive = currentUser || (auth.currentUser && !auth.currentUser.isAnonymous);
+            // التحقق المباشر من وجود مستخدم نشط أو تم تجاوزه يدوياً
+            const isUserLoggedIn = (currentUser !== null) || (auth.currentUser !== null);
             
-            if (userActive) {
+            if (isUserLoggedIn) {
                 welcome.classList.add('hidden');
                 dashboard.classList.remove('hidden');
             } else {
