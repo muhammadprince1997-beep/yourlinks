@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رابطي السحابي - منصة تصميم الروابط الشخصية</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts (Cairo) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.2);
+            border-radius: 4px;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Pulse glow animation for featured links */
+        @keyframes pulse-glow {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7);
+            }
+            50% {
+                transform: scale(1.03);
+                box-shadow: 0 0 15px 5px rgba(139, 92, 246, 0.5);
+            }
+        }
+        .animate-pulse-glow {
+            animation: pulse-glow 2s infinite;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+
+    <!-- Header Navigation -->
+    <header class="bg-slate-950/80 border-b border-slate-800 sticky top-0 z-50 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-gradient-to-tr from-violet-600 to-fuchsia-600 p-2.5 rounded-xl shadow-lg shadow-violet-500/20">
+                    <i class="fa-solid fa-link text-xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">رابطي السحابي</h1>
+                    <p class="text-xs text-slate-400">صمم صفحتك واحفظها سحابياً بضغطة زر</p>
+                </div>
+            </div>
+
+            <!-- Auth Status Area -->
+            <div id="auth-header-area" class="flex items-center gap-3">
+                <span class="text-xs text-slate-400" id="loading-auth-txt">جاري التحقق...</span>
+                <button id="btn-login" onclick="window.loginWithGoogle()" class="hidden bg-white hover:bg-slate-100 text-slate-900 px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 shadow-lg shadow-white/5">
+                    <i class="fa-brands fa-google text-red-500"></i>
+                    <span>تسجيل الدخول بجوجل</span>
+                </button>
+                <div id="user-profile-widget" class="hidden flex items-center gap-3 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl">
+                    <img id="user-profile-img" src="" class="w-7 h-7 rounded-full border border-violet-500/30" alt="avatar">
+                    <span id="user-profile-name" class="text-xs font-semibold max-w-[100px] truncate">المستخدم</span>
+                    <button onclick="window.logoutFirebase()" title="تسجيل الخروج" class="text-red-400 hover:text-red-300 transition-colors text-xs mr-2">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- App Main Container -->
+    <div class="flex-1 flex flex-col">
+        
+        <!-- Welcome Screen (Shown when logged out) -->
+        <section id="welcome-view" class="flex-grow flex flex-col items-center justify-center text-center px-4 py-16 max-w-2xl mx-auto space-y-8">
+            <div class="space-y-4">
+                <div class="inline-block bg-violet-600/10 border border-violet-500/30 text-violet-400 rounded-full px-4 py-1.5 text-xs font-semibold mb-2">
+                    ✨ الآن مع حفظ سحابي مجاني مدى الحياة
+                </div>
+                <h2 class="text-4xl md:text-5xl font-black leading-tight">
+                    اجمع كافة روابطك ومواقعك في <span class="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">صفحة واحدة</span> فائقة الأناقة!
+                </h2>
+                <p class="text-slate-400 text-base leading-relaxed">
+                    أنشئ بطاقتك الشخصية التفاعلية، اختر الألوان والمظهر المناسب لك، واجعل الروابط تظهر على شكل شريط أفقي مميز، أو شبكة منظمة، ثم شاركها مع جمهورك بكل سهولة.
+                </p>
+            </div>
+
+            <!-- Login Prompt Card -->
+            <div class="bg-slate-950/60 border border-slate-800 p-8 rounded-3xl w-full shadow-2xl space-y-6">
+                <div class="flex justify-center gap-4">
+                    <div class="w-12 h-12 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-center text-xl text-violet-400"><i class="fa-solid fa-shield-halved"></i></div>
+                    <div class="w-12 h-12 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-center text-xl text-fuchsia-400"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                    <div class="w-12 h-12 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-center text-xl text-emerald-400"><i class="fa-solid fa-rocket"></i></div>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="text-lg font-bold">ابدأ الآن مجاناً</h3>
+                    <p class="text-xs text-slate-500">سجل دخولك آمنًا بحساب Google لحفظ وتعديل بطاقتك الشخصية في أي وقت ومن أي جهاز.</p>
+                </div>
+                <button onclick="window.loginWithGoogle()" class="w-full bg-violet-600 hover:bg-violet-500 text-white py-3.5 rounded-2xl font-bold transition-all flex items-center justify-center gap-3 shadow-lg shadow-violet-600/20 text-base">
+                    <i class="fa-brands fa-google text-lg"></i>
+                    <span>سجل الدخول باستخدام Google</span>
+                </button>
+            </div>
+
+            <!-- Platform Credits -->
+            <div class="pt-6 border-t border-slate-800/80 w-full flex flex-col items-center justify-center gap-2">
+                <span class="text-xs text-slate-500">إعداد وتطوير المنصة</span>
+                <div class="flex items-center gap-2 text-sm font-bold text-slate-300">
+                    <span>الأستاذ محمد عبدالرحمن</span>
+                    <a href="https://instagram.com" target="_blank" class="text-pink-500 hover:text-pink-400"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://wa.me/96477000000" target="_blank" class="text-emerald-500 hover:text-emerald-400"><i class="fa-brands fa-whatsapp"></i></a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard view (Shown when logged in) -->
+        <section id="dashboard-view" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- Mobile Tab Navigation -->
+            <div class="lg:hidden col-span-12 flex bg-slate-950 p-1.5 rounded-xl border border-slate-800">
+                <button onclick="window.switchMobileTab('editor')" id="tab-editor-btn" class="flex-1 py-3 text-center font-bold text-sm rounded-lg transition-all bg-violet-600 text-white">
+                    <i class="fa-solid fa-pen-to-square ml-2"></i>تعديل المحتوى
+                </button>
+                <button onclick="window.switchMobileTab('preview')" id="tab-preview-btn" class="flex-1 py-3 text-center font-bold text-sm rounded-lg transition-all text-slate-400">
+                    <i class="fa-solid fa-mobile-screen-button ml-2"></i>شاهد المعاينة
+                </button>
+            </div>
+
+            <!-- LEFT SIDE: Controls and configuration -->
+            <div id="editor-panel" class="col-span-12 lg:col-span-7 bg-slate-950/50 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-8 custom-scrollbar lg:max-h-[82vh] lg:overflow-y-auto">
+                
+                <!-- Share Banner -->
+                <div class="bg-gradient-to-r from-violet-900/40 to-fuchsia-900/40 border border-violet-800/40 p-4 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-xs text-violet-300 font-bold mb-1"><i class="fa-solid fa-circle-check ml-1"></i> رابط صفحتك الشخصية جاهز!</h3>
+                        <p class="text-[11px] text-slate-400 break-all" id="live-share-link">انقر على نسخ وشاركه في حساباتك بالبايو</p>
+                    </div>
+                    <button onclick="window.copyShareLink()" class="w-full sm:w-auto bg-violet-600 hover:bg-violet-500 text-white text-xs px-4 py-2 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 shrink-0">
+                        <i class="fa-regular fa-copy"></i>
+                        <span>نسخ رابط الصفحة العام</span>
+                    </button>
+                </div>
+
+                <!-- 1. Profile Settings -->
+                <div>
+                    <h2 class="text-lg font-bold text-slate-200 border-r-4 border-violet-500 pr-3 mb-4 flex items-center justify-between">
+                        <span>1. بيانات الملف الشخصي والصورة</span>
+                        <i class="fa-regular fa-user text-slate-400"></i>
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+                        <!-- Avatar options -->
+                        <div class="md:col-span-5 flex flex-col items-center justify-start border-l border-slate-800/50 pl-0 md:pl-4">
+                            <span class="text-xs text-slate-400 mb-2 font-semibold">الصورة الرمزية</span>
+                            <div class="flex w-full bg-slate-950 p-1 rounded-lg border border-slate-800 mb-4 text-xs">
+                                <button onclick="window.setAvatarType('emoji')" id="avatar-emoji-tab" class="flex-1 py-1.5 text-center rounded font-semibold transition-all bg-violet-600 text-white">إيموجي</button>
+                                <button onclick="window.setAvatarType('image')" id="avatar-image-tab" class="flex-1 py-1.5 text-center rounded font-semibold transition-all text-slate-400">صورة</button>
+                            </div>
+
+                            <div class="relative">
+                                <div id="avatar-preview" class="w-24 h-24 rounded-full bg-gradient-to-tr from-violet-500 to-fuchsia-500 flex items-center justify-center text-4xl shadow-md border-2 border-white/10 overflow-hidden">🚀</div>
+                            </div>
+
+                            <div id="avatar-emoji-controls" class="w-full mt-3">
+                                <input type="text" id="avatar-emoji-input" oninput="window.updateProfileLocally()" class="w-full bg-slate-950 border border-slate-800 text-center rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:border-violet-500" placeholder="مثال: 💻">
+                            </div>
+
+                            <div id="avatar-image-controls" class="w-full mt-3 space-y-2 hidden">
+                                <input type="file" id="avatar-file-input" onchange="window.handleImageUpload(event)" accept="image/*" class="w-full bg-slate-950 border border-slate-800 rounded-lg text-slate-300 text-xs file:py-1 file:px-2 file:rounded-md file:border-0 file:text-xs file:bg-violet-600 file:text-white cursor-pointer">
+                                <input type="text" id="avatar-url-input" oninput="window.handleImageUrlInput(this.value)" placeholder="رابط صورة مباشر" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 text-[11px] text-slate-100 focus:outline-none focus:border-violet-500">
+                            </div>
+                        </div>
+
+                        <!-- Info details -->
+                        <div class="md:col-span-7 space-y-3">
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">الاسم أو اللقب</label>
+                                <input type="text" id="name-input" oninput="window.updateProfileLocally()" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-violet-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">الوصف المختصر (Bio)</label>
+                                <textarea id="bio-input" oninput="window.updateProfileLocally()" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-violet-500"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Display Layout Options -->
+                <div>
+                    <h2 class="text-lg font-bold text-slate-200 border-r-4 border-violet-500 pr-3 mb-4 flex items-center justify-between">
+                        <span>2. شكل وتخطيط العرض (Layout)</span>
+                        <i class="fa-solid fa-grip text-slate-400"></i>
+                    </h2>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button onclick="window.changeLayout('vertical')" id="layout-vertical-btn" class="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-800 bg-slate-900 transition-all">
+                            <i class="fa-solid fa-list text-lg mb-2 text-slate-400" id="icon-layout-vertical"></i>
+                            <span class="text-xs font-semibold">قائمة عمودية</span>
+                        </button>
+                        <button onclick="window.changeLayout('horizontal')" id="layout-horizontal-btn" class="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-800 bg-slate-900 transition-all">
+                            <i class="fa-solid fa-arrows-left-right text-lg mb-2 text-slate-400" id="icon-layout-horizontal"></i>
+                            <span class="text-xs font-semibold">شريط أفقي</span>
+                        </button>
+                        <button onclick="window.changeLayout('grid')" id="layout-grid-btn" class="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-800 bg-slate-900 transition-all">
+                            <i class="fa-solid fa-table-cells-large text-lg mb-2 text-slate-400" id="icon-layout-grid"></i>
+                            <span class="text-xs font-semibold">شبكة مربعات</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. Links Management -->
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold text-slate-200 border-r-4 border-violet-500 pr-3 flex items-center gap-2">
+                            <span>3. إدارة روابط المواقع والبطاقات</span>
+                        </h2>
+                        <button onclick="window.addNewLink()" class="bg-violet-600 hover:bg-violet-500 text-white text-xs px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1.5">
+                            <i class="fa-solid fa-plus"></i>إضافة رابط جديد
+                        </button>
+                    </div>
+                    <div id="links-editor-container" class="space-y-3">
+                        <!-- Dynamic editable link entries -->
+                    </div>
+                </div>
+
+                <!-- 4. Quick Socials -->
+                <div>
+                    <h2 class="text-lg font-bold text-slate-200 border-r-4 border-violet-500 pr-3 mb-4 flex items-center justify-between">
+                        <span>4. أيقونات التواصل السريع</span>
+                        <i class="fa-solid fa-share-nodes text-slate-400"></i>
+                    </h2>
+                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <span class="block text-xs text-slate-400 mb-1"><i class="fa-brands fa-instagram text-pink-500 ml-1"></i> إنستقرام</span>
+                            <input type="text" id="social-instagram" oninput="window.updateSocialsLocally()" placeholder="رابط الحساب كامل" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-violet-500">
+                        </div>
+                        <div>
+                            <span class="block text-xs text-slate-400 mb-1"><i class="fa-brands fa-x-twitter text-slate-300 ml-1"></i> إكس (تويتر)</span>
+                            <input type="text" id="social-twitter" oninput="window.updateSocialsLocally()" placeholder="رابط الحساب كامل" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-violet-500">
+                        </div>
+                        <div>
+                            <span class="block text-xs text-slate-400 mb-1"><i class="fa-brands fa-youtube text-red-500 ml-1"></i> يوتيوب</span>
+                            <input type="text" id="social-youtube" oninput="window.updateSocialsLocally()" placeholder="رابط القناة كامل" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-violet-500">
+                        </div>
+                        <div>
+                            <span class="block text-xs text-slate-400 mb-1"><i class="fa-brands fa-whatsapp text-emerald-500 ml-1"></i> واتساب</span>
+                            <input type="text" id="social-whatsapp" oninput="window.updateSocialsLocally()" placeholder="رقم الهاتف (مثال: 96477000000)" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-violet-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Theme Selector -->
+                <div>
+                    <h2 class="text-lg font-bold text-slate-200 border-r-4 border-violet-500 pr-3 mb-4 flex items-center justify-between">
+                        <span>5. اختر المظهر (ثيمات)</span>
+                        <i class="fa-solid fa-palette text-slate-400"></i>
+                    </h2>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="themes-container">
+                        <!-- Themes mapped dynamically -->
+                    </div>
+                </div>
+
+                <!-- Save Action Floating Bar -->
+                <div class="flex justify-between items-center pt-6 border-t border-slate-800 gap-4">
+                    <button onclick="window.saveAllToFirebaseCloud()" class="bg-gradient-to-tr from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white px-8 py-3.5 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-violet-600/20 w-full sm:w-auto justify-center">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span>مزامنة وحفظ سحابي 🌐</span>
+                    </button>
+                    <button onclick="window.exportSingleHTML()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-6 py-3.5 rounded-xl font-bold transition-all flex items-center gap-2 w-full sm:w-auto justify-center">
+                        <i class="fa-solid fa-download"></i>
+                        <span>تحميل كـ HTML</span>
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- RIGHT SIDE: Live Mockup Simulator -->
+            <div id="preview-panel" class="hidden lg:block col-span-12 lg:col-span-5 flex flex-col items-center justify-center lg:sticky lg:top-24">
+                
+                <span class="text-xs text-slate-400 mb-2 flex items-center gap-1.5"><i class="fa-solid fa-eye text-violet-500"></i> معاينة مباشرة تفاعلية</span>
+                
+                <!-- Mobile Simulator Phone -->
+                <div class="relative w-[340px] h-[640px] bg-slate-950 rounded-[40px] border-[10px] border-slate-800 shadow-2xl overflow-hidden flex flex-col ring-8 ring-slate-950/20">
+                    <!-- Mobile Notch -->
+                    <div class="absolute top-2 left-1/2 transform -translate-x-1/2 w-28 h-4 bg-slate-800 rounded-full z-20"></div>
+                    
+                    <!-- Mobile Simulator Screen -->
+                    <div id="phone-screen" class="w-full h-full overflow-y-auto custom-scrollbar flex flex-col p-6 pt-10 pb-6 transition-all duration-300 relative text-white">
+                        
+                        <div class="flex flex-col items-center text-center flex-1 z-10 w-full">
+                            <!-- Avatar Preview inside mobile -->
+                            <div id="phone-avatar" class="w-20 h-20 rounded-full flex items-center justify-center text-4xl shadow-md border-2 border-white/20 mb-3 bg-white/10 backdrop-blur-md overflow-hidden">🚀</div>
+                            
+                            <!-- Name & Biography -->
+                            <h3 id="phone-name" class="text-lg font-bold tracking-wide">أحمد الفاضل</h3>
+                            <p id="phone-bio" class="text-xs text-white/70 max-w-[240px] mt-1 line-clamp-2">الوصف الخاص ببطاقتك</p>
+                            
+                            <!-- Quick Social Icons -->
+                            <div id="phone-socials" class="flex items-center justify-center gap-3.5 mt-4 mb-6"></div>
+
+                            <hr class="w-16 border-white/20 mb-6">
+
+                            <!-- Links list wrapper -->
+                            <div id="phone-links-container" class="w-full">
+                                <div id="phone-links-list"></div>
+                            </div>
+
+                            <!-- Integrated Teacher Credits in Public Preview Simulator -->
+                            <div class="mt-auto pt-8 border-t border-white/10 w-full text-center">
+                                <span class="block text-[9px] opacity-40 mb-1">صنع وتصميم باستخدام رابطي</span>
+                                <div class="inline-flex items-center justify-center gap-1 text-[10px] font-bold opacity-60 bg-white/5 py-1 px-2.5 rounded-full">
+                                    <span>إعداد: أ. محمد عبدالرحمن</span>
+                                    <a href="https://instagram.com" class="text-pink-400"><i class="fa-brands fa-instagram"></i></a>
+                                    <a href="https://wa.me/96477000000" class="text-emerald-400"><i class="fa-brands fa-whatsapp"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Blurred Background Elements -->
+                        <div class="absolute -top-12 -right-12 w-32 h-32 bg-purple-500/15 rounded-full blur-2xl pointer-events-none"></div>
+                        <div class="absolute -bottom-12 -left-12 w-32 h-32 bg-blue-500/15 rounded-full blur-2xl pointer-events-none"></div>
+                    </div>
+                </div>
+
+                <!-- Admin info tag -->
+                <div class="mt-4 text-[11px] text-slate-500 text-center">
+                    رابطي السحابي - فكرة وتطوير الأستاذ محمد عبدالرحمن
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Dynamic Public View Mode (Shown when viewing via custom user URL hash) -->
+        <section id="public-live-view" class="hidden flex-grow flex items-center justify-center p-4 relative min-h-screen">
+            <!-- Dynamic styling will render completely here -->
+            <div id="public-inner-wrapper" class="w-full max-w-md bg-transparent flex flex-col items-center justify-center text-center py-12 px-4 text-white z-10">
+                <!-- Main user identity -->
+                <div id="public-avatar" class="w-24 h-24 rounded-full flex items-center justify-center text-5xl shadow-lg border-2 border-white/20 mb-4 bg-white/10 backdrop-blur-md overflow-hidden"></div>
+                
+                <h1 id="public-name" class="text-2xl font-extrabold tracking-wide mb-2">الاسم</h1>
+                <p id="public-bio" class="text-sm max-w-sm leading-relaxed mb-6 opacity-80">الوصف</p>
+
+                <!-- Social links -->
+                <div id="public-socials" class="flex items-center justify-center gap-5 mb-8"></div>
+
+                <hr class="w-20 border-white/20 mb-8">
+
+                <!-- Dynamic wrapped links section -->
+                <div id="public-links-container" class="w-full"></div>
+
+                <!-- Platform Unified Credit (User Requested) -->
+                <div class="mt-16 pt-6 border-t border-white/10 w-full text-center space-y-2">
+                    <span class="block text-xs opacity-50">تم إنشاء الصفحة بواسطة تطبيق <a href="#" onclick="window.location.hash=''; window.location.reload();" class="underline font-bold text-violet-400">رابطي</a></span>
+                    <div class="inline-flex items-center gap-2 bg-white/5 backdrop-blur-md py-1.5 px-3 rounded-full text-xs font-bold border border-white/10">
+                        <span class="opacity-70">إعداد: الأستاذ محمد عبدالرحمن</span>
+                        <a href="https://instagram.com" target="_blank" class="text-pink-400 hover:text-pink-300"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="https://wa.me/96477000000" target="_blank" class="text-emerald-400 hover:text-emerald-300"><i class="fa-brands fa-whatsapp"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Background Decor -->
+            <div class="absolute -top-24 -right-24 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        </section>
+
+    </div>
+
+    <!-- Modal Notification System (Custom Alerts) -->
+    <div id="custom-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <h3 class="text-lg font-bold text-white mb-2" id="modal-title">تنبيه</h3>
+            <p class="text-slate-300 text-sm leading-relaxed mb-6" id="modal-desc">رسالة للتوضيح</p>
+            <div class="flex justify-end gap-3">
+                <button onclick="window.closeModal()" class="bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all">
+                    حسنًا
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Imports & Unified Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // إعدادات فاير بيس الخاصة بمشروعك (yourlinks-98f7a)
+        const firebaseConfig = {
+            apiKey: "AIzaSyC41nLvn1BBEoZB0Hq77v5o2mIODebysdo",
+            authDomain: "yourlinks-98f7a.firebaseapp.com",
+            projectId: "yourlinks-98f7a",
+            storageBucket: "yourlinks-98f7a.firebasestorage.app",
+            messagingSenderId: "1006799078839",
+            appId: "1:1006799078839:web:b4061b503f907f99389432",
+            measurementId: "G-6D4PG1LB8B"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = "yourlinks-98f7a";
+
+        // Preset Themes Setup
+        const THEMES = [
+            {
+                id: 'dark-neon',
+                name: 'نيون داكن',
+                class: 'bg-slate-950 text-white',
+                cardClass: 'bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 text-white transition-all duration-200 hover:translate-y-[-2px]',
+                previewBg: 'background: linear-gradient(135deg, #0f172a, #1e1b4b, #581c87);',
+                socialColor: 'text-violet-400 hover:text-white'
+            },
+            {
+                id: 'sunset-glow',
+                name: 'الغروب الدافئ',
+                class: 'bg-gradient-to-tr from-amber-600 via-rose-600 to-violet-700 text-white',
+                cardClass: 'bg-white/15 hover:bg-white/20 backdrop-blur-lg border border-white/25 text-white transition-all duration-200 hover:translate-y-[-2px]',
+                previewBg: 'background: linear-gradient(135deg, #d97706, #e11d48, #7c3aed);',
+                socialColor: 'text-amber-200 hover:text-white'
+            },
+            {
+                id: 'emerald-breeze',
+                name: 'نسيم الزمرد',
+                class: 'bg-gradient-to-br from-teal-800 via-emerald-900 to-cyan-900 text-white',
+                cardClass: 'bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/15 text-white transition-all duration-200 hover:translate-y-[-2px]',
+                previewBg: 'background: linear-gradient(135deg, #115e59, #064e3b, #164e63);',
+                socialColor: 'text-emerald-300 hover:text-white'
+            },
+            {
+                id: 'minimalist-light',
+                name: 'بسيط وهادئ',
+                class: 'bg-slate-50 text-slate-800',
+                cardClass: 'bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 transition-all duration-200 hover:translate-y-[-2px] shadow-sm',
+                previewBg: 'background: #f8fafc; color: #1e293b;',
+                socialColor: 'text-slate-500 hover:text-slate-800'
+            }
+        ];
+
+        // State Store
+        let currentUser = null;
+        let appState = {
+            profile: {
+                name: 'الاسم الكامل',
+                bio: 'وصف قصير يعبر عنك وعن مجالك',
+                avatarType: 'emoji', // 'emoji' or 'image'
+                avatarEmoji: '🚀',
+                avatarImage: '',
+                socials: {
+                    instagram: '',
+                    twitter: '',
+                    youtube: '',
+                    whatsapp: ''
+                }
+            },
+            links: [
+                {
+                    id: 'link_1',
+                    title: '📂 معرض أعمالي الشخصي',
+                    url: 'https://',
+                    isFeatured: true
+                }
+            ],
+            selectedThemeId: 'dark-neon',
+            layout: 'vertical'
+        };
+
+        // --- Firebase Auth Initialization Sequence (RULE 3) ---
+        const initAuthAndListen = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    // Start anonymously if not signed in to adhere to query guards before sign in
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                console.error("Auth init failure:", err);
+            }
+
+            // Watch auth changes
+            onAuthStateChanged(auth, (user) => {
+                const loadingText = document.getElementById('loading-auth-txt');
+                if (loadingText) loadingText.classList.add('hidden');
+                
+                const viewUserHash = window.location.hash.substring(1);
+                if (viewUserHash) {
+                    renderPublicViewOfUser(viewUserHash);
+                    return;
+                }
+
+                if (user && !user.isAnonymous) {
+                    currentUser = user;
+                    document.getElementById('user-profile-widget').classList.remove('hidden');
+                    document.getElementById('user-profile-img').src = user.photoURL || 'https://api.dicebear.com/7.x/bottts/svg';
+                    document.getElementById('user-profile-name').innerText = user.displayName || 'مستخدم';
+                    document.getElementById('btn-login').classList.add('hidden');
+                    
+                    loadOrInitializeUserData(user.uid);
+                } else {
+                    currentUser = null;
+                    document.getElementById('user-profile-widget').classList.add('hidden');
+                    document.getElementById('btn-login').classList.remove('hidden');
+                    updateViewsByAuthStatus();
+                }
+            });
+        };
+
+        // Execute Auth Init Immediately
+        initAuthAndListen();
+
+        // Google Authentication Login Flow
+        const provider = new GoogleAuthProvider();
+        window.loginWithGoogle = async () => {
+            try {
+                const result = await signInWithPopup(auth, provider);
+                currentUser = result.user;
+                showModal("مرحباً بك! 🎉", `تم تسجيل الدخول بنجاح باسم: ${currentUser.displayName}`);
+                loadOrInitializeUserData(currentUser.uid);
+            } catch (error) {
+                console.error("Auth Error", error);
+                showModal("حدث خطأ في التسجيل", "فشل تسجيل الدخول بحساب Google. الرجاء المحاولة ثانية.");
+            }
+        };
+
+        window.logoutFirebase = async () => {
+            try {
+                await signOut(auth);
+                currentUser = null;
+                // Sign back anonymously to maintain active session guard
+                await signInAnonymously(auth);
+                showModal("تم تسجيل الخروج", "تم تسجيل خروجك بنجاح من المنصة.");
+                updateViewsByAuthStatus();
+            } catch (error) {
+                console.error("Logout Error", error);
+            }
+        };
+
+        // Load or create cloud data profile (Strict Path matching RULE 1)
+        async function loadOrInitializeUserData(userId) {
+            if (!auth.currentUser) return;
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'userPages', userId);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    appState = docSnap.data();
+                } else {
+                    // Setup default mock values on registration
+                    appState.profile.name = currentUser.displayName || 'الاسم الكامل';
+                    appState.profile.bio = 'مرحبًا بك في صفحتي الشخصية السحابية!';
+                    appState.profile.avatarType = 'image';
+                    appState.profile.avatarEmoji = '🚀';
+                    appState.profile.avatarImage = currentUser.photoURL || 'https://api.dicebear.com/7.x/bottts/svg';
+                }
+                
+                updateViewsByAuthStatus();
+                loadFormDataFromState();
+                renderLinksList();
+                renderPreviewScreen();
+                updateLayoutButtons();
+                updateShareLinkUI(userId);
+            } catch (error) {
+                console.error("Firestore loading error:", error);
+            }
+        }
+
+        // Save All elements in state to Firestore database (Strict Path - RULE 1 & 3)
+        window.saveAllToFirebaseCloud = async () => {
+            const user = auth.currentUser;
+            if (!user || user.isAnonymous) {
+                showModal("مطلوب تسجيل الدخول", "يرجى تسجيل الدخول أولاً بحساب Google لحفظ وتخزين بطاقتك الشخصية في السحاب.");
+                return;
+            }
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'userPages', user.uid);
+                await setDoc(docRef, appState);
+                showModal("تم الحفظ بنجاح! 💾", "تم حفظ وتحديث صفحتك السحابية وبطاقتك الشخصية بنجاح على الإنترنت.");
+            } catch (error) {
+                console.error("Error writing to Firestore:", error);
+                showModal("فشل مزامنة البيانات", "حدث خطأ أثناء الاتصال بقاعدة البيانات. يرجى المحاولة لاحقاً.");
+            }
+        };
+
+        function updateShareLinkUI(userId) {
+            const domain = window.location.origin + window.location.pathname;
+            const fullLink = `${domain}#${userId}`;
+            const linkText = document.getElementById('live-share-link');
+            linkText.innerText = fullLink;
+            linkText.setAttribute('data-link', fullLink);
+        }
+
+        window.copyShareLink = () => {
+            const linkText = document.getElementById('live-share-link').getAttribute('data-link');
+            if (linkText) {
+                const tempInput = document.createElement("input");
+                tempInput.value = linkText;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand("copy");
+                document.body.removeChild(tempInput);
+                showModal("تم نسخ الرابط! 📋", "الرابط الخاص بصفحتك منسوخ الآن وجاهز للمشاركة في البايو.");
+            }
+        };
+
+        // Render Guest Public View (Strict Path - RULE 1 & 2)
+        async function renderPublicViewOfUser(targetUserId) {
+            document.getElementById('welcome-view').classList.add('hidden');
+            document.getElementById('dashboard-view').classList.add('hidden');
+            document.getElementById('public-live-view').classList.remove('hidden');
+
+            try {
+                // Fetch public user record securely
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'userPages', targetUserId);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    const activeTheme = THEMES.find(t => t.id === data.selectedThemeId) || THEMES[0];
+                    const isLight = activeTheme.id === 'minimalist-light';
+
+                    // Styled page container
+                    const pubView = document.getElementById('public-live-view');
+                    pubView.setAttribute('style', activeTheme.previewBg);
+                    
+                    const wrapper = document.getElementById('public-inner-wrapper');
+                    wrapper.className = `w-full max-w-md bg-transparent flex flex-col items-center justify-center text-center py-12 px-4 z-10 ${isLight ? 'text-slate-800' : 'text-white'}`;
+
+                    // Set Avatar
+                    const avatarDiv = document.getElementById('public-avatar');
+                    avatarDiv.innerHTML = getAvatarHTMLOfData(data);
+                    
+                    document.getElementById('public-name').innerText = data.profile.name;
+                    document.getElementById('public-bio').innerText = data.profile.bio;
+
+                    // Social contacts mapping
+                    const socialsContainer = document.getElementById('public-socials');
+                    socialsContainer.innerHTML = '';
+                    const socials = data.profile.socials;
+
+                    if (socials.instagram) {
+                        socialsContainer.innerHTML += `<a href="${socials.instagram}" target="_blank" class="${activeTheme.socialColor} transition-colors text-2xl"><i class="fa-brands fa-instagram"></i></a>`;
+                    }
+                    if (socials.twitter) {
+                        socialsContainer.innerHTML += `<a href="${socials.twitter}" target="_blank" class="${activeTheme.socialColor} transition-colors text-2xl"><i class="fa-brands fa-x-twitter"></i></a>`;
+                    }
+                    if (socials.youtube) {
+                        socialsContainer.innerHTML += `<a href="${socials.youtube}" target="_blank" class="${activeTheme.socialColor} transition-colors text-2xl"><i class="fa-brands fa-youtube"></i></a>`;
+                    }
+                    if (socials.whatsapp) {
+                        let cleanWA = socials.whatsapp.replace(/[^0-9]/g, '');
+                        socialsContainer.innerHTML += `<a href="https://wa.me/${cleanWA}" target="_blank" class="${activeTheme.socialColor} transition-colors text-2xl"><i class="fa-brands fa-whatsapp"></i></a>`;
+                    }
+
+                    // Links layout rendering
+                    const linksContainer = document.getElementById('public-links-container');
+                    linksContainer.innerHTML = '';
+
+                    let listWrapper = document.createElement('div');
+                    if (data.layout === 'vertical') {
+                        listWrapper.className = "w-full space-y-4";
+                    } else if (data.layout === 'horizontal') {
+                        listWrapper.className = "w-full flex gap-4 overflow-x-auto no-scrollbar py-3 px-1 snap-x scroll-smooth";
+                    } else if (data.layout === 'grid') {
+                        listWrapper.className = "w-full grid grid-cols-2 gap-4";
+                    }
+
+                    linksContainer.appendChild(listWrapper);
+
+                    data.links.forEach(link => {
+                        if (!link.title || !link.url) return;
+                        const card = document.createElement('a');
+                        card.href = link.url;
+                        card.target = '_blank';
+                        
+                        let cardClass = activeTheme.cardClass;
+                        if (link.isFeatured) cardClass += ' animate-pulse-glow';
+
+                        if (data.layout === 'vertical') {
+                            card.className = `w-full py-3.5 px-5 rounded-xl flex items-center justify-between font-bold text-base shadow-md transition-all ${cardClass}`;
+                            card.innerHTML = `
+                                <span class="text-right flex-1 truncate ml-2">${link.title}</span>
+                                <i class="fa-solid fa-chevron-left text-sm opacity-60"></i>
+                            `;
+                        } else if (data.layout === 'horizontal') {
+                            card.className = `min-w-[145px] max-w-[155px] h-[120px] p-4 rounded-xl flex flex-col justify-between items-center text-center shadow-md transition-all snap-center flex-shrink-0 ${cardClass}`;
+                            card.innerHTML = `
+                                <div class="text-3xl mt-1 select-none">🔗</div>
+                                <span class="text-xs font-extrabold leading-normal line-clamp-2 w-full mt-1">${link.title}</span>
+                            `;
+                        } else if (data.layout === 'grid') {
+                            card.className = `w-full h-[110px] p-4 rounded-xl flex flex-col justify-between items-start text-right shadow-md transition-all ${cardClass}`;
+                            card.innerHTML = `
+                                <i class="fa-solid fa-arrow-up-right-from-square text-xs self-end opacity-55"></i>
+                                <span class="text-xs font-extrabold leading-normal line-clamp-2 mt-auto w-full">${link.title}</span>
+                            `;
+                        }
+
+                        listWrapper.appendChild(card);
+                    });
+
+                } else {
+                    document.getElementById('public-live-view').innerHTML = `
+                        <div class="text-center p-8 text-white">
+                            <i class="fa-solid fa-face-frown text-5xl mb-4 text-violet-400"></i>
+                            <h2 class="text-2xl font-bold mb-2">الصفحة المطلوبة غير موجودة!</h2>
+                            <p class="text-xs text-slate-400 mb-6">تأكد من كتابة الرابط بشكل صحيح.</p>
+                            <button onclick="window.location.hash=''; window.location.reload();" class="bg-violet-600 hover:bg-violet-500 text-white px-6 py-2 rounded-xl text-sm font-bold transition-all">تصفح تطبيق رابطي</button>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error("Guest profile renderer crash:", error);
+            }
+        }
+
+        function getAvatarHTMLOfData(dataObj) {
+            const p = dataObj.profile;
+            if (p.avatarType === 'image') {
+                if (p.avatarImage) {
+                    return `<img src="${p.avatarImage}" class="w-full h-full object-cover rounded-full" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg'" />`;
+                } else {
+                    return `<i class="fa-solid fa-image text-2xl opacity-50"></i>`;
+                }
+            } else {
+                return p.avatarEmoji || '🚀';
+            }
+        }
+
+        function updateViewsByAuthStatus() {
+            if (window.location.hash) return;
+
+            const welcome = document.getElementById('welcome-view');
+            const dashboard = document.getElementById('dashboard-view');
+            
+            if (currentUser && !currentUser.isAnonymous) {
+                welcome.classList.add('hidden');
+                dashboard.classList.remove('hidden');
+            } else {
+                welcome.classList.remove('hidden');
+                dashboard.classList.add('hidden');
+            }
+        }
+
+        // Window scope mappings for UI triggers
+        window.changeLayout = (newLayout) => {
+            appState.layout = newLayout;
+            updateLayoutButtons();
+            renderPreviewScreen();
+        };
+
+        window.updateLayoutButtons = () => {
+            const layouts = ['vertical', 'horizontal', 'grid'];
+            layouts.forEach(l => {
+                const btn = document.getElementById(`layout-${l}-btn`);
+                const icon = document.getElementById(`icon-layout-${l}`);
+                if (!btn || !icon) return;
+                
+                if (l === appState.layout) {
+                    btn.className = "flex flex-col items-center justify-center p-3 rounded-xl border border-violet-500 bg-violet-600/10 ring-2 ring-violet-500/20 transition-all text-violet-400";
+                    icon.className = icon.className.replace('text-slate-400', 'text-violet-400');
+                } else {
+                    btn.className = "flex flex-col items-center justify-center p-3 rounded-xl border border-slate-800 bg-slate-900 hover:border-slate-700 transition-all text-slate-300";
+                    icon.className = icon.className.replace('text-violet-400', 'text-slate-400');
+                }
+            });
+        };
+
+        window.setAvatarType = (type) => {
+            appState.profile.avatarType = type;
+            const emojiTab = document.getElementById('avatar-emoji-tab');
+            const imageTab = document.getElementById('avatar-image-tab');
+            const emojiControls = document.getElementById('avatar-emoji-controls');
+            const imageControls = document.getElementById('avatar-image-controls');
+
+            if (type === 'emoji') {
+                emojiTab.className = "flex-1 py-1.5 text-center rounded font-semibold transition-all bg-violet-600 text-white";
+                imageTab.className = "flex-1 py-1.5 text-center rounded font-semibold transition-all text-slate-400";
+                emojiControls.classList.remove('hidden');
+                imageControls.classList.add('hidden');
+            } else {
+                imageTab.className = "flex-1 py-1.5 text-center rounded font-semibold transition-all bg-violet-600 text-white";
+                emojiTab.className = "flex-1 py-1.5 text-center rounded font-semibold transition-all text-slate-400";
+                emojiControls.classList.add('hidden');
+                imageControls.classList.remove('hidden');
+            }
+            renderPreviewScreen();
+        };
+
+        window.updateProfileLocally = () => {
+            appState.profile.name = document.getElementById('name-input').value;
+            appState.profile.bio = document.getElementById('bio-input').value;
+            appState.profile.avatarEmoji = document.getElementById('avatar-emoji-input').value;
+            renderPreviewScreen();
+        };
+
+        window.updateSocialsLocally = () => {
+            appState.profile.socials.instagram = document.getElementById('social-instagram').value;
+            appState.profile.socials.twitter = document.getElementById('social-twitter').value;
+            appState.profile.socials.youtube = document.getElementById('social-youtube').value;
+            appState.profile.socials.whatsapp = document.getElementById('social-whatsapp').value;
+            renderPreviewScreen();
+        };
+
+        window.renderThemeSelectors = () => {
+            const container = document.getElementById('themes-container');
+            container.innerHTML = '';
+            
+            THEMES.forEach(t => {
+                const isActive = t.id === appState.selectedThemeId;
+                const borderClass = isActive ? 'border-violet-500 ring-2 ring-violet-500/20' : 'border-slate-800';
+                
+                const themeBtn = `
+                    <button onclick="changeTheme('${t.id}')" class="flex flex-col text-right p-3 rounded-xl border ${borderClass} bg-slate-900 hover:border-slate-700 transition-all">
+                        <span class="text-xs font-semibold text-slate-200 mb-2">${t.name}</span>
+                        <div class="w-full h-8 rounded-md flex items-center justify-center gap-1.5" style="${t.previewBg}">
+                            <div class="w-2.5 h-2.5 rounded-full bg-white/40"></div>
+                            <div class="w-5 h-1.5 rounded bg-white/40"></div>
+                        </div>
+                    </button>
+                `;
+                container.innerHTML += themeBtn;
+            });
+        };
+
+        window.changeTheme = (themeId) => {
+            appState.selectedThemeId = themeId;
+            renderThemeSelectors();
+            renderPreviewScreen();
+        };
+
+        window.loadFormDataFromState = () => {
+            document.getElementById('name-input').value = appState.profile.name;
+            document.getElementById('bio-input').value = appState.profile.bio;
+            document.getElementById('avatar-emoji-input').value = appState.profile.avatarEmoji || '🚀';
+            document.getElementById('avatar-url-input').value = appState.profile.avatarImage || '';
+
+            document.getElementById('social-instagram').value = appState.profile.socials.instagram || '';
+            document.getElementById('social-twitter').value = appState.profile.socials.twitter || '';
+            document.getElementById('social-youtube').value = appState.profile.socials.youtube || '';
+            document.getElementById('social-whatsapp').value = appState.profile.socials.whatsapp || '';
+
+            setAvatarType(appState.profile.avatarType);
+            renderThemeSelectors();
+        };
+
+        window.handleImageUpload = (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                if (!file.type.match('image.*')) {
+                    showModal("تنبيه ملف غير صالح", "يرجى رفع ملف صورة فقط.");
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    appState.profile.avatarImage = e.target.result;
+                    renderPreviewScreen();
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        window.handleImageUrlInput = (url) => {
+            appState.profile.avatarImage = url;
+            renderPreviewScreen();
+        };
+
+        window.renderLinksList = () => {
+            const container = document.getElementById('links-editor-container');
+            container.innerHTML = '';
+
+            if (appState.links.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-6 border-2 border-dashed border-slate-800 rounded-xl text-slate-500 text-xs">
+                        لا توجد مواقع مضافة حالياً. أضف رابطك الأول.
+                    </div>
+                `;
+                return;
+            }
+
+            appState.links.forEach((link, idx) => {
+                const linkDiv = document.createElement('div');
+                linkDiv.className = 'bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-3 relative';
+                linkDiv.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-slate-800/60 pb-2">
+                        <span class="text-xs font-bold text-slate-400">الرابط #${idx + 1}</span>
+                        <div class="flex items-center gap-2">
+                            <button onclick="toggleFeatureLink('${link.id}')" class="text-xs ${link.isFeatured ? 'text-amber-500 hover:text-amber-600' : 'text-slate-500 hover:text-slate-400'}">
+                                <i class="${link.isFeatured ? 'fa-solid' : 'fa-regular'} fa-star ml-1"></i>مميز
+                            </button>
+                            <button onclick="deleteLink('${link.id}')" class="text-xs text-red-500 hover:text-red-400">
+                                <i class="fa-regular fa-trash-can ml-1"></i>حذف
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <span class="block text-[11px] text-slate-500 mb-1">اسم الموقع أو الرابط</span>
+                            <input type="text" oninput="updateLinkData('${link.id}', 'title', this.value)" value="${link.title}" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1 text-xs text-slate-100 focus:outline-none focus:border-violet-500">
+                        </div>
+                        <div>
+                            <span class="block text-[11px] text-slate-500 mb-1">عنوان الموقع (URL)</span>
+                            <input type="text" oninput="updateLinkData('${link.id}', 'url', this.value)" value="${link.url}" placeholder="https://" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1 text-xs text-slate-100 focus:outline-none focus:border-violet-500">
+                        </div>
+                    </div>
+                `;
+                container.appendChild(linkDiv);
+            });
+        };
+
+        window.addNewLink = () => {
+            const newId = 'link_' + Date.now();
+            appState.links.push({
+                id: newId,
+                title: '🔗 موقع جديد',
+                url: 'https://',
+                isFeatured: false
+            });
+            renderLinksList();
+            renderPreviewScreen();
+        };
+
+        window.updateLinkData = (id, key, val) => {
+            const idx = appState.links.findIndex(l => l.id === id);
+            if (idx !== -1) {
+                appState.links[idx][key] = val;
+                renderPreviewScreen();
+            }
+        };
+
+        window.toggleFeatureLink = (id) => {
+            const idx = appState.links.findIndex(l => l.id === id);
+            if (idx !== -1) {
+                appState.links[idx].isFeatured = !appState.links[idx].isFeatured;
+                renderLinksList();
+                renderPreviewScreen();
+            }
+        };
+
+        window.deleteLink = (id) => {
+            appState.links = appState.links.filter(l => l.id !== id);
+            renderLinksList();
+            renderPreviewScreen();
+        };
+
+        window.renderPreviewScreen = () => {
+            const activeTheme = THEMES.find(t => t.id === appState.selectedThemeId) || THEMES[0];
+            const screen = document.getElementById('phone-screen');
+            if (!screen) return;
+
+            screen.setAttribute('style', activeTheme.previewBg);
+            const isLight = activeTheme.id === 'minimalist-light';
+            screen.className = `w-full h-full overflow-y-auto custom-scrollbar flex flex-col p-6 pt-10 pb-6 transition-all duration-300 relative ${isLight ? 'text-slate-800' : 'text-white'}`;
+
+            const editorPreview = document.getElementById('avatar-preview');
+            editorPreview.innerHTML = getAvatarHTMLOfData(appState);
+
+            const phoneAvatar = document.getElementById('phone-avatar');
+            phoneAvatar.innerHTML = getAvatarHTMLOfData(appState);
+
+            document.getElementById('phone-name').innerText = appState.profile.name || 'بدون اسم';
+            const phoneBio = document.getElementById('phone-bio');
+            phoneBio.innerText = appState.profile.bio || '';
+            phoneBio.className = `text-xs max-w-[240px] mt-1 line-clamp-2 ${isLight ? 'text-slate-600' : 'text-white/70'}`;
+
+            const socialsContainer = document.getElementById('phone-socials');
+            socialsContainer.innerHTML = '';
+            let socialAdded = false;
+            const socials = appState.profile.socials;
+
+            if (socials.instagram) {
+                socialsContainer.innerHTML += `<a href="${socials.instagram}" target="_blank" class="${activeTheme.socialColor} transition-colors text-xl"><i class="fa-brands fa-instagram"></i></a>`;
+                socialAdded = true;
+            }
+            if (socials.twitter) {
+                socialsContainer.innerHTML += `<a href="${socials.twitter}" target="_blank" class="${activeTheme.socialColor} transition-colors text-xl"><i class="fa-brands fa-x-twitter"></i></a>`;
+                socialAdded = true;
+            }
+            if (socials.youtube) {
+                socialsContainer.innerHTML += `<a href="${socials.youtube}" target="_blank" class="${activeTheme.socialColor} transition-colors text-xl"><i class="fa-brands fa-youtube"></i></a>`;
+                socialAdded = true;
+            }
+            if (socials.whatsapp) {
+                let cleanWA = socials.whatsapp.replace(/[^0-9]/g, '');
+                socialsContainer.innerHTML += `<a href="https://wa.me/${cleanWA}" target="_blank" class="${activeTheme.socialColor} transition-colors text-xl"><i class="fa-brands fa-whatsapp"></i></a>`;
+                socialAdded = true;
+            }
+
+            if (!socialAdded) {
+                socialsContainer.innerHTML = `<span class="text-[10px] opacity-30 italic">لا توجد أيقونات مضافة</span>`;
+            }
+
+            const linksContainer = document.getElementById('phone-links-container');
+            linksContainer.innerHTML = '';
+
+            const listWrapper = document.createElement('div');
+            if (appState.layout === 'vertical') {
+                listWrapper.className = "w-full space-y-3 flex-1";
+            } else if (appState.layout === 'horizontal') {
+                listWrapper.className = "w-full flex gap-3 overflow-x-auto no-scrollbar py-2 px-1 snap-x scroll-smooth";
+            } else if (appState.layout === 'grid') {
+                listWrapper.className = "w-full grid grid-cols-2 gap-3";
+            }
+
+            linksContainer.appendChild(listWrapper);
+
+            appState.links.forEach(link => {
+                if (!link.title || !link.url) return;
+                const card = document.createElement('a');
+                card.href = link.url;
+                card.target = '_blank';
+                
+                let cardClass = activeTheme.cardClass;
+                if (link.isFeatured) cardClass += ' animate-pulse-glow';
+
+                if (appState.layout === 'vertical') {
+                    card.className = `w-full py-3 px-4 rounded-xl flex items-center justify-between font-semibold text-sm shadow-md transition-all ${cardClass}`;
+                    card.innerHTML = `
+                        <span class="text-right flex-1 truncate ml-2">${link.title}</span>
+                        <i class="fa-solid fa-chevron-left text-xs opacity-60"></i>
+                    `;
+                } else if (appState.layout === 'horizontal') {
+                    card.className = `min-w-[130px] max-w-[140px] h-[110px] p-3 rounded-xl flex flex-col justify-between items-center text-center shadow-md transition-all snap-center flex-shrink-0 ${cardClass}`;
+                    card.innerHTML = `
+                        <div class="text-2xl mt-1 select-none">🔗</div>
+                        <span class="text-xs font-bold leading-snug line-clamp-2 w-full mt-1">${link.title}</span>
+                    `;
+                } else if (appState.layout === 'grid') {
+                    card.className = `w-full h-[95px] p-3 rounded-xl flex flex-col justify-between items-start text-right shadow-md transition-all ${cardClass}`;
+                    card.innerHTML = `
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] self-end opacity-55"></i>
+                        <span class="text-xs font-bold leading-normal line-clamp-2 mt-auto w-full">${link.title}</span>
+                    `;
+                }
+
+                listWrapper.appendChild(card);
+            });
+        };
+
+        window.exportSingleHTML = () => {
+            const activeTheme = THEMES.find(t => t.id === appState.selectedThemeId) || THEMES[0];
+            const isLight = activeTheme.id === 'minimalist-light';
+
+            let socialHTML = '';
+            const socials = appState.profile.socials;
+            if (socials.instagram) socialHTML += `<a href="${socials.instagram}" target="_blank" class="${activeTheme.socialColor} transition-colors text-2xl"><i class="fa-brands fa-instagram"></i></a>`;
+            if (socials.twitter) socialHTML += `<a href="${socials.twitter}" target="_blank" class="${activeTheme.socialColor} transition-colors text-2xl"><i class="fa-brands fa-x-twitter"></i></a>`;
+            if (socials.youtube) socialHTML += `<a href="${socials.youtube}" target="_blank" class="${activeTheme.socialColor} transition-colors text-2xl"><i class="fa-brands fa-youtube"></i></a>`;
+            if (socials.whatsapp) {
+                let cleanWA = socials.whatsapp.replace(/[^0-9]/g, '');
+                socialHTML += `<a href="https://wa.me/${cleanWA}" target="_blank" class="${activeTheme.socialColor} transition-colors text-2xl"><i class="fa-brands fa-whatsapp"></i></a>`;
+            }
+
+            let linksHTML = '';
+            let wrapperStart = '';
+            let wrapperEnd = '';
+
+            if (appState.layout === 'vertical') {
+                wrapperStart = `<div class="w-full space-y-4">`;
+                wrapperEnd = `</div>`;
+                appState.links.forEach(link => {
+                    if (!link.title || !link.url) return;
+                    let cardClass = activeTheme.cardClass;
+                    if (link.isFeatured) cardClass += ' animate-pulse-glow';
+                    linksHTML += `
+                    <a href="${link.url}" target="_blank" class="w-full py-3.5 px-5 rounded-xl flex items-center justify-between font-bold text-base shadow-md transition-all ${cardClass}">
+                        <span class="text-right flex-1 truncate ml-2">${link.title}</span>
+                        <i class="fa-solid fa-chevron-left text-sm opacity-60"></i>
+                    </a>
+                    `;
+                });
+            } else if (appState.layout === 'horizontal') {
+                wrapperStart = `<div class="w-full flex gap-4 overflow-x-auto no-scrollbar py-3 px-1 snap-x scroll-smooth">`;
+                wrapperEnd = `</div>`;
+                appState.links.forEach(link => {
+                    if (!link.title || !link.url) return;
+                    let cardClass = activeTheme.cardClass;
+                    if (link.isFeatured) cardClass += ' animate-pulse-glow';
+                    linksHTML += `
+                    <a href="${link.url}" target="_blank" class="min-w-[145px] max-w-[155px] h-[120px] p-4 rounded-xl flex flex-col justify-between items-center text-center shadow-md transition-all snap-center flex-shrink-0 ${cardClass}">
+                        <div class="text-3xl mt-1 select-none">🔗</div>
+                        <span class="text-xs font-extrabold leading-normal line-clamp-2 w-full mt-1">${link.title}</span>
+                    </a>
+                    `;
+                });
+            } else if (appState.layout === 'grid') {
+                wrapperStart = `<div class="w-full grid grid-cols-2 gap-4">`;
+                wrapperEnd = `</div>`;
+                appState.links.forEach(link => {
+                    if (!link.title || !link.url) return;
+                    let cardClass = activeTheme.cardClass;
+                    if (link.isFeatured) cardClass += ' animate-pulse-glow';
+                    linksHTML += `
+                    <a href="${link.url}" target="_blank" class="w-full h-[110px] p-4 rounded-xl flex flex-col justify-between items-start text-right shadow-md transition-all ${cardClass}">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-xs self-end opacity-55"></i>
+                        <span class="text-xs font-extrabold leading-normal line-clamp-2 mt-auto w-full">${link.title}</span>
+                    </a>
+                    `;
+                });
+            }
+
+            const linksSection = wrapperStart + linksHTML + wrapperEnd;
+            const finalAvatarHTML = getAvatarHTMLOfData(appState);
+
+            const baseStyles = `
+                @keyframes pulse-glow {
+                    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7); }
+                    50% { transform: scale(1.02); box-shadow: 0 0 15px 5px rgba(139, 92, 246, 0.5); }
+                }
+                .animate-pulse-glow { animation: pulse-glow 2s infinite; }
+                .no-scrollbar::-webkit-scrollbar { display: none; }
+                .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+            `;
+
+            const fullHtmlContent = `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${appState.profile.name || 'صفحة الروابط'}</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"><\/script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+        ${baseStyles}
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 relative overflow-x-hidden" style="${activeTheme.previewBg}">
+
+    <!-- Main Container -->
+    <div class="w-full max-w-md bg-transparent flex flex-col items-center justify-center text-center py-8 px-4 ${isLight ? 'text-slate-800' : 'text-white'}">
+        
+        <!-- Profile Pic -->
+        <div class="w-24 h-24 rounded-full flex items-center justify-center text-5xl shadow-lg border-2 border-white/20 mb-4 bg-white/10 backdrop-blur-md overflow-hidden">
+            ${finalAvatarHTML}
+        </div>
+
+        <!-- Bio Details -->
+        <h1 class="text-2xl font-extrabold tracking-wide mb-2">${appState.profile.name || 'بدون اسم'}</h1>
+        <p class="text-sm max-w-sm leading-relaxed mb-6 opacity-80">${appState.profile.bio || ''}</p>
+
+        <!-- Social Media Icons -->
+        <div class="flex items-center justify-center gap-5 mb-8">
+            ${socialHTML}
+        </div>
+
+        <hr class="w-20 border-white/20 mb-8">
+
+        <!-- Links List Wrapper -->
+        ${linksSection}
+
+        <!-- Instructor Developer Footer -->
+        <div class="mt-16 pt-6 border-t border-white/10 w-full text-center space-y-2">
+            <span class="block text-[11px] opacity-40">تم إنشاء الصفحة بواسطة تطبيق <a href="#" class="underline font-bold">رابطي</a></span>
+            <div class="inline-flex items-center gap-2 bg-white/5 backdrop-blur-md py-1.5 px-3 rounded-full text-[11px] font-bold border border-white/10">
+                <span class="opacity-70">إعداد: الأستاذ محمد عبدالرحمن</span>
+                <a href="https://instagram.com" target="_blank" class="text-pink-400"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://wa.me/96477000000" target="_blank" class="text-emerald-400"><i class="fa-brands fa-whatsapp"></i></a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>`;
+
+            const blob = new Blob([fullHtmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'my-links.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showModal("تم التصدير بنجاح! 🎉", "تم تجميع وحفظ صفحة الروابط وبداخلها حقوق الإعداد والواتساب والانستقرام الخاص بـ أ. محمد عبدالرحمن!");
+        };
+
+        window.switchMobileTab = (tab) => {
+            const editorPanel = document.getElementById('editor-panel');
+            const previewPanel = document.getElementById('preview-panel');
+            const editorBtn = document.getElementById('tab-editor-btn');
+            const previewBtn = document.getElementById('tab-preview-btn');
+
+            if (tab === 'editor') {
+                editorPanel.classList.remove('hidden');
+                previewPanel.classList.add('hidden');
+                editorBtn.className = "flex-1 py-3 text-center font-bold text-sm rounded-lg transition-all bg-violet-600 text-white";
+                previewBtn.className = "flex-1 py-3 text-center font-bold text-sm rounded-lg transition-all text-slate-400";
+            } else {
+                editorPanel.classList.add('hidden');
+                previewPanel.classList.remove('hidden');
+                previewPanel.classList.add('flex');
+                editorBtn.className = "flex-1 py-3 text-center font-bold text-sm rounded-lg transition-all text-slate-400";
+                previewBtn.className = "flex-1 py-3 text-center font-bold text-sm rounded-lg transition-all bg-violet-600 text-white";
+            }
+        };
+
+        window.showModal = (title, desc) => {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-desc').innerText = desc;
+            document.getElementById('custom-modal').classList.remove('hidden');
+        };
+
+        window.closeModal = () => {
+            document.getElementById('custom-modal').classList.add('hidden');
+        };
+    </script>
+</body>
+</html>
